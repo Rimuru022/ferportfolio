@@ -5,7 +5,7 @@ import Reveal from '@/components/Reveal';
 
 const roleImages: Record<number, { src: string; alt: string }> = {
   1: {
-    src: '/images/n8n-compliance.png',
+    src: '/recruiters-page/images/n8n-compliance.png',
     alt: 'n8n automation workflow for certification procurement and compliance data analysis at Castrol (BP)',
   },
 };

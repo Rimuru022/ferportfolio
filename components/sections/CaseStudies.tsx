@@ -6,14 +6,14 @@ import Reveal from '@/components/Reveal';
 
 const caseStudyImages: Record<number, { src: string; alt: string; caption?: string }[]> = {
   0: [
-    { src: '/images/inventory-1.jpg', alt: 'University inventory dashboard view 1' },
-    { src: '/images/inventory-2.jpg', alt: 'University inventory dashboard view 2' },
-    { src: '/images/inventory-3.jpg', alt: 'University inventory dashboard view 3' },
-    { src: '/images/inventory-4.jpg', alt: 'Power Query automation behind the inventory system' },
-    { src: '/images/n8n-inventory.png', alt: 'n8n workflow automation for inventory management' },
+    { src: '/recruiters-page/images/inventory-1.jpg', alt: 'University inventory dashboard view 1' },
+    { src: '/recruiters-page/images/inventory-2.jpg', alt: 'University inventory dashboard view 2' },
+    { src: '/recruiters-page/images/inventory-3.jpg', alt: 'University inventory dashboard view 3' },
+    { src: '/recruiters-page/images/inventory-4.jpg', alt: 'Power Query automation behind the inventory system' },
+    { src: '/recruiters-page/images/n8n-inventory.png', alt: 'n8n workflow automation for inventory management' },
   ],
   1: [
-    { src: '/images/chatbi.jpg', alt: 'Secure GenAI ChatBI prototype interface showing natural language to SQL query generation' },
+    { src: '/recruiters-page/images/chatbi.jpg', alt: 'Secure GenAI ChatBI prototype interface showing natural language to SQL query generation' },
   ],
 };
 
