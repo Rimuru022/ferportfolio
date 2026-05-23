@@ -6,6 +6,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Fernando Pérez — Data Operations & Systems Architect',
   description: 'Portfolio of Fernando Pérez, an outcome-driven Systems & Data Architect specializing in backend automation, BI architecture, and RevOps workflows.',
+  icons: {
+    icon: './favicon.svg',
+  },
 };
 
 export default function RootLayout({
