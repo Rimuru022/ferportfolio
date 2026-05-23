@@ -11,7 +11,7 @@ export const dictionaries = {
     },
     hero: {
       name: 'Fernando Pérez',
-      role: 'Data Operations & Systems Architect | Remote (CST / Mexico) · U.S. work authorized',
+      role: 'Integration & DataOps Engineer | Remote (CST / Mexico) · U.S. work authorized',
       summary: 'I bridge the gap between messy business processes and deterministic data. I specialize in backend automation, BI architecture, and RevOps workflows: turning 30-hour manual tasks into 5-minute automated systems using strict data governance.',
       downloadResume: 'Download Resume (.pdf)',
       viewGithub: 'View GitHub',
