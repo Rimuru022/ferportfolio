@@ -4,7 +4,7 @@ import { I18nProvider } from '@/lib/i18n';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Fernando Pérez — Data Operations & Systems Architect',
+  title: 'Fernando Pérez — Integration & DataOps Engineer',
   description: 'Portfolio of Fernando Pérez, an outcome-driven Systems & Data Architect specializing in backend automation, BI architecture, and RevOps workflows.',
   icons: {
     icon: './favicon.svg',
