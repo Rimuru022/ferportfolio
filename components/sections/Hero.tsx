@@ -26,7 +26,7 @@ export default function Hero() {
           </p>
           <div className="hero-entrance hero-entrance-delay-4 flex flex-wrap gap-4">
             <a
-              href="./cv.pdf"
+              href="./Fernando_Perez_Gonzalez_Resume.pdf"
               download
               className="btn-lift inline-flex items-center px-6 py-3 text-xs font-medium uppercase tracking-widest bg-warm-charcoal text-warm-ivory hover:bg-cobalt-signal"
               style={{ letterSpacing: '0.08em' }}
