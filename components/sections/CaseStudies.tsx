@@ -10,7 +10,7 @@ const caseStudyImages: Record<number, { src: string; alt: string; caption?: stri
     { src: './images/inventory-2.jpg', alt: 'University inventory dashboard view 2' },
     { src: './images/inventory-3.jpg', alt: 'University inventory dashboard view 3' },
     { src: './images/inventory-4.jpg', alt: 'Power Query automation behind the inventory system' },
-    { src: './images/n8n-inventory.png', alt: 'n8n workflow automation for inventory management' },
+    { src: './images/n8n-inventory.jpg', alt: 'n8n workflow automation for inventory management' },
   ],
   1: [
     { src: './images/chatbi.jpg', alt: 'Secure GenAI ChatBI prototype interface showing natural language to SQL query generation' },

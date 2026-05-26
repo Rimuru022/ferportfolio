@@ -1,0 +1,377 @@
+import { writeFileSync } from 'fs';
+
+// Inline dictionaries (copied from lib/dictionaries.ts)
+const en = {
+  nav: { home: 'Home', philosophy: 'Philosophy', caseStudies: 'Case Studies', experience: 'Experience', contact: 'Contact' },
+  hero: {
+    name: 'Fernando Pérez',
+    role: 'Integration & DataOps Engineer | Remote (CST / Mexico) · U.S. work authorized',
+    summary: 'I bridge the gap between messy business processes and deterministic data. I specialize in backend automation, BI architecture, and RevOps workflows: turning 30-hour manual tasks into 5-minute automated systems using strict data governance.',
+    downloadResume: 'Download Resume (.pdf)',
+    viewGithub: 'View GitHub',
+  },
+  philosophy: {
+    title: 'Engineering Philosophy & Stack',
+    text: 'My core engineering principle is doing more with less. Whether optimizing cloud infrastructure to cut AI token usage by 70% or designing self-hosted homelabs running multiple isolated LXC containers on just 8GB of RAM, I build lean, secure, and highly leveraged systems.',
+    categories: {
+      data: { title: 'Data & BI', items: ['SQL (PostgreSQL, MySQL)', 'Power Query', 'Power BI', 'SAP Fiori / ERP', 'Excel Advanced'] },
+      automation: { title: 'Automation & Ops', items: ['n8n', 'FunctionGraph (Serverless)', 'Apify', 'Google APIs (Calendar, Maps, Gmail)', 'Custom REST APIs'] },
+      infrastructure: { title: 'Infrastructure & Security', items: ['Proxmox', 'LXC / VMs', 'Google Cloud (Compute, Firebase)', 'Cloudflare Tunnels', 'Nginx Proxy Manager', 'SIEM (Splunk, Wazuh)', 'AdGuard DNS'] },
+      languages: { title: 'Languages', items: ['Python', 'Node.js (TypeScript / Zod)', 'Google Antigravity'] },
+    },
+  },
+  caseStudies: {
+    title: 'Case Studies',
+    items: [
+      { title: 'Low-Friction Inventory & Procurement Automation', challenge: 'University departments needed an inventory tracking system, but the end-users were non-technical. Deploying a complex custom Python script or a strict SQL database would create a massive maintenance bottleneck once handed over.', build: 'Engineered a deterministic automation flow using n8n. Used Google Sheets as the visual state-management tool so non-technical users could easily read and edit thresholds. The flow compares weekly forms against the baseline and triggers automated procurement alerts.', result: 'Created a self-sustaining system that requires zero technical maintenance. Users simply fill out a form, and the architecture handles data sanitization, math, and email routing automatically.', tags: ['n8n', 'Workflow Automation', 'System Design'] },
+      { title: 'Secure GenAI "ChatBI" for Telecommunications (POC)', challenge: 'A telecom client needed a way for non-technical managers to query complex SQL databases using natural language, but had strict constraints: a 3-day delivery window and a zero-tolerance policy for database modification or SQL injection.', build: 'Developed a Text-to-SQL architecture using Llama 3.1 (8B). Overcame the lack of vector databases by injecting robust dynamic schema context directly into system prompts. Implemented strict guardrails, parametrized read-only queries, and rollback procedures.', result: 'Delivered a functional, highly accurate prototype in 72 hours that dynamically generated graphs and insights from Huawei Cloud RDS and GaussDB without hallucinations or security breaches.', tags: ['LLMs', 'SQL', 'System Prompts', 'Backend Security'] },
+      { title: 'Enterprise Business Intelligence & Automated Forecasting', challenge: 'A commercial division at BP (Castrol) was losing roughly 30 hours per week manually extracting flat files from SAP ERP, transforming data in Excel, and building static PowerPoint presentations to track sales KPIs and distributor forecasts.', build: 'Architected an automated Power BI dashboard fed by a custom Power Query pipeline. The pipeline automatically ingests and cleans SAP data exports, standardizes fields, and provides dynamic filtering for over 15+ daily users.', result: 'Reduced reporting cycle time by 80% (from days to under 5 hours). Allowed a single analyst to execute the workload of three, while maintaining a +/- 15% forecast accuracy to prevent stockouts.', tags: ['Power BI', 'Power Query', 'SAP ERP', 'Data Operations'] },
+      { title: 'Cloud-Native AI Orchestration & API Integration', challenge: 'Needed a flexible, cost-efficient architecture to build AI-powered applications leveraging Google Cloud infrastructure, Google APIs (Calendar, Maps, Gmail), and automation workflows without vendor lock-in or excessive API costs.', build: 'Architected a hybrid cloud-local AI system using Google Cloud Compute Instances to run local language models connected to custom-built applications via REST APIs. Integrated Google Calendar, Maps, and Gmail APIs with n8n automation workflows and custom code in Node.js and Python. Used Google Antigravity for agent-first rapid prototyping and Firebase for real-time data synchronization across applications.', result: 'Reduced AI token consumption by 30-45% through efficient local model deployment, cutting external API key costs by 15-30% while maintaining performance. Achieved enhanced data privacy by processing sensitive operations on local cloud instances. Delivered a flexible, reusable architecture adaptable to varying user requirements across multiple projects.', tags: ['Google Cloud', 'Google Antigravity', 'AI Models', 'n8n', 'Firebase', 'REST APIs'] },
+      { title: 'Real-Time Cybersecurity Traffic Analysis & Automated Reporting', challenge: 'Cybersecurity analysts needed to process real-time network traffic data from multiple clients, each requiring personalized reporting formats. Manual deep packet inspection and report generation created a bottleneck, delaying critical security insights and reducing analysis throughput.', build: 'Deployed a local AI model on Google Cloud Compute Instances connected to a custom-built packet analysis system. The system ingests real-time network traffic, performs deep packet inspection, and generates personalized security reports per client. An automated workflow (n8n + Python) creates predefined email summaries and queues reports for analyst review before final delivery.', result: 'Increased analysis throughput and reduced turnaround time for security analysts. Clients received consistent, personalized reports faster while analysts maintained quality control through the review-before-send workflow. The system scaled across multiple clients without requiring additional headcount.', tags: ['Cybersecurity', 'AI Models', 'Google Cloud', 'n8n', 'Python', 'Real-Time Analysis'] },
+    ],
+  },
+  experience: {
+    title: 'Professional Experience',
+    roles: [
+      { title: 'Data & Sales Strategy Analyst', company: 'Castrol (BP)', period: 'Sep 2024 – Mar 2025', bullets: ['Centralized 3 critical data sources into automated dashboards, saving ~30 manual hours per week.', 'Managed distributor communications and sales forecasts based on historical SKUs.'] },
+      { title: 'Regulatory & Compliance Ops', company: 'Castrol (BP)', period: 'Mar 2025 – Sep 2025', bullets: ['Managed certification procurement and compliance analysis for 15+ critical SKUs based on NOMs.', 'Automated the sanitization of CSV learning-campus datasets using n8n to generate strategic HR reports.'] },
+      { title: 'Cloud Solutions Architect (Intern)', company: 'Huawei Cloud', period: '2024', bullets: ['Architected serverless data pipelines (FunctionGraph) pushing 200 logs/5min from OBS to SIEMs (Splunk / Wazuh).', 'Optimized client POC architectures (Spot instances, auto-scaling), estimating compute savings up to 35% and AI token reduction up to 70%.', 'Translated complex telecom concepts (5G NFV / SDN, Multitenancy) into digestible analogies for non-technical stakeholders.'] },
+    ],
+  },
+  contact: {
+    education: 'B.S. Systems & Telecommunications Engineering – Universidad Iberoamericana (Expected May 2027)',
+    emailLabel: 'Email', linkedinLabel: 'LinkedIn',
+    email: 'fernandoperezgonzalez01@gmail.com', linkedin: 'www.linkedin.com/in/fernandopgonzalez',
+    emailPlaceholder: 'fernandoperezgonzalez01@gmail.com', linkedinPlaceholder: 'linkedin.com/in/fernandopgonzalez',
+  },
+};
+
+const es = {
+  nav: { home: 'Inicio', philosophy: 'Filosofía', caseStudies: 'Casos de Estudio', experience: 'Experiencia', contact: 'Contacto' },
+  hero: {
+    name: 'Fernando Pérez',
+    role: 'Arquitecto de Operaciones de Datos y Sistemas | Remoto (CST / México) · Autorizado para trabajar en EE.UU.',
+    summary: 'Cierro la brecha entre procesos de negocio caóticos y datos deterministas. Me especializo en automatización de backend, arquitectura de BI y flujos de trabajo de RevOps: convierto tareas manuales de 30 horas en sistemas automatizados de 5 minutos mediante gobernanza estricta de datos.',
+    downloadResume: 'Descargar CV (.pdf)',
+    viewGithub: 'Ver GitHub',
+  },
+  philosophy: {
+    title: 'Filosofía de Ingeniería y Stack',
+    text: 'Mi principio de ingeniería central es hacer más con menos. Ya sea optimizando infraestructura en la nube para reducir el uso de tokens de IA en un 70% o diseñando homelabs autoalojados ejecutando múltiples contenedores LXC aislados en solo 8GB de RAM, construyo sistemas lean, seguros y altamente apalancados.',
+    categories: {
+      data: { title: 'Datos y BI', items: ['SQL (PostgreSQL, MySQL)', 'Power Query', 'Power BI', 'SAP Fiori / ERP', 'Excel Avanzado'] },
+      automation: { title: 'Automatización y Ops', items: ['n8n', 'FunctionGraph (Serverless)', 'Apify', 'Google APIs (Calendar, Maps, Gmail)', 'APIs REST Personalizadas'] },
+      infrastructure: { title: 'Infraestructura y Seguridad', items: ['Proxmox', 'LXC / VMs', 'Google Cloud (Compute, Firebase)', 'Cloudflare Tunnels', 'Nginx Proxy Manager', 'SIEM (Splunk, Wazuh)', 'AdGuard DNS'] },
+      languages: { title: 'Lenguajes', items: ['Python', 'Node.js (TypeScript / Zod)', 'Google Antigravity'] },
+    },
+  },
+  caseStudies: {
+    title: 'Casos de Estudio',
+    items: [
+      { title: 'Automatización de Bajo Fricción para Inventario y Compras', challenge: 'Los departamentos universitarios necesitaban un sistema de rastreo de inventario, pero los usuarios finales no eran técnicos. Desplegar un script complejo de Python personalizado o una base de datos SQL estricta crearía un cuello de botella de mantenimiento masivo una vez transferido.', build: 'Diseñé un flujo de automatización determinista usando n8n. Utilicé Google Sheets como herramienta visual de gestión de estado para que usuarios no técnicos pudieran leer y editar umbrales fácilmente. El flujo compara formularios semanales contra la línea base y activa alertas de compra automatizadas.', result: 'Creé un sistema autosuficiente que requiere cero mantenimiento técnico. Los usuarios simplemente llenan un formulario, y la arquitectura maneja la sanitización de datos, cálculos y enrutamiento de correos automáticamente.', tags: ['n8n', 'Automatización de Flujos', 'Diseño de Sistemas'] },
+      { title: 'GenAI Seguro "ChatBI" para Telecomunicaciones (POC)', challenge: 'Un cliente de telecomunicaciones necesitaba una forma de que gerentes no técnicos consultaran bases de datos SQL complejas usando lenguaje natural, pero tenía restricciones estrictas: una ventana de entrega de 3 días y una política de tolerancia cero para modificación de bases de datos o inyección SQL.', build: 'Desarrollé una arquitectura de Texto a SQL usando Llama 3.1 (8B). Superé la falta de bases de datos vectoriales inyectando contexto de esquema dinámico robusto directamente en los prompts del sistema. Implementé guardrails estrictos, consultas parametrizadas de solo lectura y procedimientos de rollback.', result: 'Entregué un prototipo funcional y altamente preciso en 72 horas que generaba dinámicamente gráficos e insights desde Huawei Cloud RDS y GaussDB sin alucinaciones ni brechas de seguridad.', tags: ['LLMs', 'SQL', 'System Prompts', 'Seguridad de Backend'] },
+      { title: 'Inteligencia de Negocios Empresarial y Pronóstico Automatizado', challenge: 'Una división comercial de BP (Castrol) perdía aproximadamente 30 horas por semana extrayendo manualmente archivos planos de SAP ERP, transformando datos en Excel y construyendo presentaciones estáticas de PowerPoint para rastrear KPIs de ventas y pronósticos de distribuidores.', build: 'Arquitecté un dashboard automatizado de Power BI alimentado por un pipeline personalizado de Power Query. El pipeline ingiere y limpia automáticamente exportaciones de datos de SAP, estandariza campos y proporciona filtrado dinámico para más de 15 usuarios diarios.', result: 'Reduje el tiempo del ciclo de reporteo en un 80% (de días a menos de 5 horas). Permití que un solo analista ejecutara la carga de trabajo de tres, manteniendo una precisión de pronóstico de +/- 15% para prevenir desabastecimiento.', tags: ['Power BI', 'Power Query', 'SAP ERP', 'Operaciones de Datos'] },
+      { title: 'Orquestación de IA en la Nube e Integración de APIs', challenge: 'Se necesitaba una arquitectura flexible y eficiente para construir aplicaciones impulsadas por IA usando infraestructura de Google Cloud, APIs de Google (Calendar, Maps, Gmail) y flujos de automatización sin dependencia de un solo proveedor ni costos excesivos de APIs.', build: 'Arquitecté un sistema híbrido nube-local usando instancias de cómputo de Google Cloud para ejecutar modelos de lenguaje locales conectados a aplicaciones propias vía APIs REST. Integré las APIs de Google Calendar, Maps y Gmail con flujos de automatización en n8n y código personalizado en Node.js y Python. Usé Google Antigravity para prototipado rápido agent-first y Firebase para sincronización de datos en tiempo real entre aplicaciones.', result: 'Reduje el consumo de tokens de IA en un 30-45% mediante despliegue eficiente de modelos locales, reduciendo costos externos de API keys en un 15-30% sin sacrificar rendimiento. Logré mayor privacidad de datos al procesar operaciones sensibles en instancias locales en la nube. Entregué una arquitectura flexible y reutilizable adaptable a requerimientos variables en múltiples proyectos.', tags: ['Google Cloud', 'Google Antigravity', 'Modelos de IA', 'n8n', 'Firebase', 'APIs REST'] },
+      { title: 'Análisis de Tráfico de Ciberseguridad en Tiempo Real y Reportes Automatizados', challenge: 'Analistas de ciberseguridad necesitaban procesar tráfico de red en tiempo real de múltiples clientes, cada uno con formatos de reporte personalizados. La inspección profunda de paquetes y generación manual de reportes creaba un cuello de botella, retrasando información crítica de seguridad y reduciendo la capacidad de análisis.', build: 'Desplegué un modelo local de IA en instancias de cómputo de Google Cloud conectado a un sistema propio de análisis de paquetes. El sistema ingiere tráfico de red en tiempo real, realiza inspección profunda de paquetes y genera reportes de seguridad personalizados por cliente. Un flujo automatizado (n8n + Python) crea resúmenes predefinidos por correo y encola reportes para revisión del analista antes del envío final.', result: 'Aumenté la capacidad de análisis y reduje el tiempo de entrega para analistas de seguridad. Los clientes recibieron reportes consistentes y personalizados más rápido, mientras los analistas mantuvieron control de calidad mediante el flujo de revisión previa al envío. El sistema escaló a múltiples clientes sin requerir personal adicional.', tags: ['Ciberseguridad', 'Modelos de IA', 'Google Cloud', 'n8n', 'Python', 'Análisis en Tiempo Real'] },
+    ],
+  },
+  experience: {
+    title: 'Experiencia Profesional',
+    roles: [
+      { title: 'Analista de Datos y Estrategia de Ventas', company: 'Castrol (BP)', period: 'Sep 2024 – Mar 2025', bullets: ['Centralicé 3 fuentes de datos críticas en dashboards automatizados, ahorrando ~30 horas manuales por semana.', 'Gestioné comunicaciones con distribuidores y pronósticos de ventas basados en SKUs históricos.'] },
+      { title: 'Operaciones Regulatorias y de Cumplimiento', company: 'Castrol (BP)', period: 'Mar 2025 – Sep 2025', bullets: ['Gestioné la adquisición de certificaciones y análisis de cumplimiento para 15+ SKUs críticos basados en NOMs.', 'Automatizé la sanitización de datasets CSV de campus de aprendizaje usando n8n para generar reportes estratégicos de RRHH.'] },
+      { title: 'Arquitecto de Soluciones en la Nube (Becario)', company: 'Huawei Cloud', period: '2024', bullets: ['Arquitecté pipelines de datos serverless (FunctionGraph) enviando 200 logs/5min desde OBS a SIEMs (Splunk / Wazuh).', 'Optimicé arquitecturas POC de clientes (Spot instances, auto-scaling), estimando ahorros de computo de hasta 35% y reducción de tokens de IA de hasta 70%.', 'Traduje conceptos complejos de telecomunicaciones (5G NFV / SDN, Multitenancy) en analogías digeribles para stakeholders no técnicos.'] },
+    ],
+  },
+  contact: {
+    education: 'Lic. en Ingeniería de Sistemas y Telecomunicaciones – Universidad Iberoamericana (Expected May 2027)',
+    emailLabel: 'Correo', linkedinLabel: 'LinkedIn',
+    email: 'fernandoperezgonzalez01@gmail.com', linkedin: 'www.linkedin.com/in/fernandopgonzalez',
+    emailPlaceholder: 'fernandoperezgonzalez01@gmail.com', linkedinPlaceholder: 'linkedin.com/in/fernandopgonzalez',
+  },
+};
+
+function renderTags(tags) {
+  return tags.map(t => `<span class="tag">${t}</span>`).join('');
+}
+
+function renderCaseStudyImages(index) {
+  const images = {
+    0: [
+      { src: './images/inventory-1.jpg', alt: 'University inventory dashboard view 1' },
+      { src: './images/inventory-2.jpg', alt: 'University inventory dashboard view 2' },
+      { src: './images/inventory-3.jpg', alt: 'University inventory dashboard view 3' },
+      { src: './images/inventory-4.jpg', alt: 'Power Query automation behind the inventory system' },
+      { src: './images/n8n-inventory.jpg', alt: 'n8n workflow automation for inventory management' },
+    ],
+    1: [
+      { src: './images/chatbi.jpg', alt: 'Secure GenAI ChatBI prototype interface' },
+    ],
+  };
+  const imgs = images[index];
+  if (!imgs || imgs.length === 0) return '';
+  if (imgs.length === 1) {
+    return `<figure class="case-image"><img src="${imgs[0].src}" alt="${imgs[0].alt}" loading="lazy" width="700" height="400" decoding="async"/></figure>`;
+  }
+  const grid = imgs.map(img => `<figure class="case-image"><img src="${img.src}" alt="${img.alt}" loading="lazy" width="350" height="200" decoding="async"/></figure>`).join('');
+  return `<div class="case-image-grid">${grid}</div>`;
+}
+
+function renderRoleImage(index) {
+  const img = { 1: { src: './images/n8n-compliance.jpg', alt: 'n8n automation workflow for compliance data analysis' } }[index];
+  if (!img) return '';
+  return `<figure class="case-image mt-5 max-w-xl"><img src="${img.src}" alt="${img.alt}" loading="lazy" width="600" height="340" decoding="async"/></figure>`;
+}
+
+function renderCaseStudies(lang) {
+  const data = lang === 'en' ? en : es;
+  return data.caseStudies.items.map((item, i) => {
+    const expanded = i === 0 ? ' expanded' : '';
+    const toggleIcon = i === 0 ? '−' : '+';
+    return `
+    <div class="case-study reveal-up" style="transition-delay:${i * 120}ms">
+      <div class="border-t pt-6">
+        <button class="case-toggle w-full text-left" aria-expanded="${i === 0}" data-index="${i}">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1">
+              <h3 class="case-title text-lg md:text-xl font-semibold mb-2">${item.title}</h3>
+              <div class="flex flex-wrap gap-2">${renderTags(item.tags)}</div>
+            </div>
+            <span class="toggle-icon text-2xl leading-none mt-1 shrink-0">${toggleIcon}</span>
+          </div>
+        </button>
+        <div class="case-content${expanded}">
+          <div class="case-content-inner mt-6 space-y-4 max-w-prose">
+            <div><p class="text-label mb-1.5">Challenge</p><p class="text-sm md:text-base leading-relaxed">${item.challenge}</p></div>
+            <div><p class="text-label mb-1.5">Build</p><p class="text-sm md:text-base leading-relaxed">${item.build}</p></div>
+            <div><p class="text-label mb-1.5">Result</p><p class="text-sm md:text-base leading-relaxed">${item.result}</p></div>
+            ${renderCaseStudyImages(i) ? `<div class="pt-4">${renderCaseStudyImages(i)}</div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderExperience(lang) {
+  const data = lang === 'en' ? en : es;
+  return data.experience.roles.map((role, i) => `
+    <div class="role-entry reveal-up" style="transition-delay:${i * 100}ms">
+      <div class="border-t pt-6">
+        <div class="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 mb-3">
+          <h3 class="text-lg md:text-xl font-semibold">${role.title}</h3>
+          <span class="text-xs text-soft-ash uppercase tracking-widest period">${role.period}</span>
+        </div>
+        <p class="text-sm text-soft-ash mb-3">${role.company}</p>
+        <ul class="space-y-2 max-w-prose">
+          ${role.bullets.map(b => `<li class="text-sm md:text-base leading-relaxed">${b}</li>`).join('')}
+        </ul>
+        ${renderRoleImage(i)}
+      </div>
+    </div>`).join('');
+}
+
+function renderPhilosophy(lang) {
+  const data = lang === 'en' ? en : es;
+  const cats = data.philosophy.categories;
+  const keys = Object.keys(cats);
+  return `
+    <div class="reveal-up"><div class="mb-12 md:mb-16"><p class="text-label mb-3">${data.philosophy.title}</p><p class="text-base md:text-lg leading-relaxed max-w-prose">${data.philosophy.text}</p></div></div>
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      ${keys.map((key, i) => `<div class="reveal-up" style="transition-delay:${i * 100}ms"><div><h3 class="text-sm font-semibold mb-3 uppercase tracking-widest">${cats[key].title}</h3><ul class="space-y-1.5">${cats[key].items.map(item => `<li class="text-sm text-soft-ash">${item}</li>`).join('')}</ul></div></div>`).join('')}
+    </div>`;
+}
+
+const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fernando Pérez — Data Operations & Systems Architect</title>
+<meta name="description" content="Portfolio of Fernando Pérez, an outcome-driven Systems & Data Architect specializing in backend automation, BI architecture, and RevOps workflows."/>
+<link rel="icon" href="./favicon.svg" type="image/svg+xml"/>
+<style>
+*,*:after,*:before{box-sizing:border-box;border:0 solid #e5e7eb}
+html{scroll-behavior:smooth;line-height:1.5;-webkit-text-size-adjust:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{margin:0;background-color:oklch(97% .005 80);color:oklch(22% .015 80);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-feature-settings:"kern" 1,"liga" 1;text-rendering:optimizeLegibility}
+h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0;text-wrap:pretty}a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;background:none;border:none;padding:0}ul,ol{list-style:none;margin:0;padding:0}img{display:block;max-width:100%;height:auto}
+::selection{background-color:oklch(52% .13 250/.2)}:focus-visible{outline:2px solid oklch(52% .13 250);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+.text-label{font-size:.75rem;font-weight:500;text-transform:uppercase;color:oklch(55% .01 80);letter-spacing:.08em}
+.section-padding{padding:4rem 1.5rem}@media(min-width:768px){.section-padding{padding:6rem 3rem}}@media(min-width:1024px){.section-padding{padding:8rem 4rem}}
+.mx-auto{margin-left:auto;margin-right:auto}.max-w-6xl{max-width:72rem}.max-w-prose{max-width:70ch}.max-w-xl{max-width:36rem}
+.mt-5{margin-top:1.25rem}.mb-1\\.5{margin-bottom:.375rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-10{margin-bottom:2.5rem}.mb-12{margin-bottom:3rem}.mt-1{margin-top:.25rem}.mt-6{margin-top:1.5rem}.pt-6{padding-top:1.5rem}.pt-4{padding-top:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.px-2{padding-left:.5rem;padding-right:.5rem}.py-0\\.5{padding-top:.125rem;padding-bottom:.125rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.pt-20{padding-top:5rem}
+.gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}
+.space-y-2>:not([hidden])~:not([hidden]){margin-top:.5rem}.space-y-4>:not([hidden])~:not([hidden]){margin-top:1rem}.space-y-8>:not([hidden])~:not([hidden]){margin-top:2rem}.space-y-10>:not([hidden])~:not([hidden]){margin-top:2.5rem}
+.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.min-h-screen{min-height:100vh}.w-full{width:100%}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.items-baseline{align-items:baseline}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.text-left{text-align:left}
+.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-base{font-size:1rem;line-height:1.5rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xs{font-size:.75rem;line-height:1rem}.text-2xl{font-size:1.5rem;line-height:2rem}
+.font-bold{font-weight:700}.font-semibold{font-weight:600}.font-medium{font-weight:500}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-.025em}.tracking-widest{letter-spacing:.1em}
+.border-t{border-top-width:1px;border-color:oklch(55% .01 80/.2)}.bg-warm-ivory{background-color:oklch(97% .005 80)}.bg-warm-surface{background-color:oklch(93% .006 80)}.bg-warm-charcoal{background-color:oklch(22% .015 80)}
+.text-warm-charcoal{color:oklch(22% .015 80)}.text-warm-ivory{color:oklch(97% .005 80)}.text-soft-ash{color:oklch(55% .01 80)}.text-soft-ash\\/50{color:oklch(55% .01 80/.5)}.text-soft-ash\\/60{color:oklch(55% .01 80/.6)}.text-soft-ash\\/70{color:oklch(55% .01 80/.7)}.text-warm-charcoal\\/80{color:oklch(22% .015 80/.8)}
+.fixed{position:fixed}.top-0{top:0}.left-0{left:0}.right-0{right:0}.z-50{z-index:50}
+.case-image{background-color:oklch(96% .004 80);padding:4px}
+.case-image-grid{display:grid;grid-template-columns:1fr;gap:.75rem}@media(min-width:640px){.case-image-grid{grid-template-columns:repeat(2,1fr)}}
+.tag{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:oklch(55% .01 80/.7);border:1px solid oklch(55% .01 80/.2);padding:.125rem .5rem}
+.reveal-up{opacity:0;transform:translateY(40px);transition:opacity 700ms cubic-bezier(.25,1,.5,1),transform 700ms cubic-bezier(.25,1,.5,1)}.reveal-up.reveal-up-visible{opacity:1;transform:translateY(0)}
+.hero-entrance{opacity:0;transform:translateY(30px);animation:hero-in 600ms cubic-bezier(.25,1,.5,1) forwards}.hero-entrance-delay-1{animation-delay:100ms}.hero-entrance-delay-2{animation-delay:250ms}.hero-entrance-delay-3{animation-delay:400ms}.hero-entrance-delay-4{animation-delay:550ms}
+@keyframes hero-in{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.case-content{display:grid;grid-template-rows:0fr;transition:grid-template-rows 500ms cubic-bezier(.25,1,.5,1)}.case-content.expanded{grid-template-rows:1fr}.case-content-inner{overflow:hidden}
+.btn-lift{transition:transform 200ms cubic-bezier(.25,1,.5,1),background-color 150ms ease-out,border-color 150ms ease-out,color 150ms ease-out}.btn-lift:hover{transform:translateY(-2px)}
+.nav-link{position:relative}.nav-link::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background-color:oklch(52% .13 250);opacity:0;transition:opacity 200ms ease-out}.nav-link.active::after{opacity:1}
+@media(min-width:640px){.sm\\:flex-row{flex-direction:row}}
+@media(min-width:768px){.md\\:mb-14{margin-bottom:3.5rem}.md\\:mb-16{margin-bottom:4rem}.md\\:flex{display:flex}.md\\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\\:flex-row{flex-direction:row}.md\\:items-baseline{align-items:baseline}.md\\:justify-between{justify-content:space-between}.md\\:px-12{padding-left:3rem;padding-right:3rem}.md\\:text-5xl{font-size:3.75rem;line-height:1}.md\\:text-xl{font-size:1.25rem;line-height:1.75rem}.md\\:text-base{font-size:1rem;line-height:1.5rem}}
+@media(min-width:1024px){.lg\\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.lg\\:px-16{padding-left:4rem;padding-right:4rem}.lg\\:text-7xl{font-size:4.5rem;line-height:1}}
+</style>
+</head>
+<body>
+
+<header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-colors duration-200">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-12">
+    <a href="#hero" class="text-sm font-semibold tracking-tight text-warm-charcoal transition-colors duration-150" data-i18n="hero.name">${en.hero.name}</a>
+    <div class="flex items-center gap-6">
+      <ul class="hidden md:flex items-center gap-6">
+        <li><a href="#hero" class="nav-link text-xs font-medium uppercase tracking-widest transition-colors duration-150" data-i18n="nav.home">${en.nav.home}</a></li>
+        <li><a href="#philosophy" class="nav-link text-xs font-medium uppercase tracking-widest transition-colors duration-150" data-i18n="nav.philosophy">${en.nav.philosophy}</a></li>
+        <li><a href="#case-studies" class="nav-link text-xs font-medium uppercase tracking-widest transition-colors duration-150" data-i18n="nav.caseStudies">${en.nav.caseStudies}</a></li>
+        <li><a href="#experience" class="nav-link text-xs font-medium uppercase tracking-widest transition-colors duration-150" data-i18n="nav.experience">${en.nav.experience}</a></li>
+        <li><a href="#contact" class="nav-link text-xs font-medium uppercase tracking-widest transition-colors duration-150" data-i18n="nav.contact">${en.nav.contact}</a></li>
+      </ul>
+      <button id="lang-toggle" class="text-xs font-medium uppercase tracking-widest text-soft-ash transition-colors duration-150" style="letter-spacing:.08em" aria-label="Toggle language">
+        <span id="lang-en" class="text-warm-charcoal font-semibold">EN</span>
+        <span class="mx-1 text-soft-ash/50">/</span>
+        <span id="lang-es">ES</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main class="min-h-screen">
+
+<section id="hero" class="flex min-h-screen flex-col justify-center px-6 pt-20 md:px-12 lg:px-16">
+  <div class="mx-auto max-w-6xl w-full">
+    <div class="max-w-prose">
+      <p class="hero-entrance hero-entrance-delay-1 text-label mb-4" data-i18n="hero.role">${en.hero.role}</p>
+      <h1 class="hero-entrance hero-entrance-delay-2 text-5xl font-bold tracking-tight text-warm-charcoal md:text-5xl lg:text-7xl mb-6" style="line-height:1.05" data-i18n="hero.name">${en.hero.name}</h1>
+      <p class="hero-entrance hero-entrance-delay-3 text-base md:text-lg leading-relaxed text-warm-charcoal/80 mb-10 max-w-prose" data-i18n="hero.summary">${en.hero.summary}</p>
+      <div class="hero-entrance hero-entrance-delay-4 flex flex-wrap gap-4">
+        <a href="./cv.pdf" download class="btn-lift inline-flex items-center px-6 py-3 text-xs font-medium uppercase tracking-widest bg-warm-charcoal text-warm-ivory transition-colors duration-150" style="letter-spacing:.08em" data-i18n="hero.downloadResume">${en.hero.downloadResume}</a>
+        <a href="https://github.com/Rimuru022" target="_blank" rel="noopener noreferrer" class="btn-lift inline-flex items-center px-6 py-3 text-xs font-medium uppercase tracking-widest border border-warm-charcoal text-warm-charcoal transition-colors duration-150" style="letter-spacing:.08em" data-i18n="hero.viewGithub">${en.hero.viewGithub}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="philosophy" class="section-padding bg-warm-surface">
+  <div class="mx-auto max-w-6xl">${renderPhilosophy('en')}</div>
+</section>
+
+<section id="case-studies" class="section-padding bg-warm-ivory">
+  <div class="mx-auto max-w-6xl">
+    <div class="reveal-up"><p class="text-label mb-10 md:mb-14" data-i18n="caseStudies.title">${en.caseStudies.title}</p></div>
+    <div class="space-y-8">${renderCaseStudies('en')}</div>
+  </div>
+</section>
+
+<section id="experience" class="section-padding bg-warm-surface">
+  <div class="mx-auto max-w-6xl">
+    <div class="reveal-up"><p class="text-label mb-10 md:mb-14" data-i18n="experience.title">${en.experience.title}</p></div>
+    <div class="space-y-10">${renderExperience('en')}</div>
+  </div>
+</section>
+
+<section id="contact" class="section-padding bg-warm-ivory">
+  <div class="mx-auto max-w-6xl">
+    <div class="reveal-up"><p class="text-label mb-10 md:mb-14" data-i18n="nav.contact">${en.nav.contact}</p></div>
+    <div class="max-w-prose space-y-8">
+      <div class="reveal-up" style="transition-delay:100ms">
+        <div><p class="text-label mb-2">Education</p><p class="text-base md:text-lg leading-relaxed text-warm-charcoal/80" data-i18n="contact.education">${en.contact.education}</p></div>
+      </div>
+      <div class="reveal-up" style="transition-delay:200ms">
+        <div class="flex flex-col sm:flex-row gap-6">
+          <a href="mailto:${en.contact.email}" class="group inline-flex items-center gap-2 text-sm md:text-base text-warm-charcoal transition-colors duration-150"><span class="text-label" data-i18n="contact.emailLabel">${en.contact.emailLabel}</span><span class="font-medium">${en.contact.emailPlaceholder}</span></a>
+          <a href="https://${en.contact.linkedin}" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 text-sm md:text-base text-warm-charcoal transition-colors duration-150"><span class="text-label" data-i18n="contact.linkedinLabel">${en.contact.linkedinLabel}</span><span class="font-medium">${en.contact.linkedinPlaceholder}</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+var LANG={en:${JSON.stringify(en)},es:${JSON.stringify(es)}};
+var currentLang='en';
+function setLang(lang){
+  currentLang=lang;
+  document.documentElement.lang=lang;
+  document.getElementById('lang-en').className=lang==='en'?'text-warm-charcoal font-semibold':'';
+  document.getElementById('lang-es').className=lang==='es'?'text-warm-charcoal font-semibold':'';
+  var d=LANG[lang];
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var key=el.getAttribute('data-i18n');
+    var keys=key.split('.');
+    var val=d;
+    for(var i=0;i<keys.length;i++){val=val[keys[i]];if(!val)return}
+    el.textContent=val;
+  });
+  var navLinks=document.querySelectorAll('.nav-link');
+  var navKeys=['home','philosophy','caseStudies','experience','contact'];
+  navLinks.forEach(function(link,i){link.textContent=d.nav[navKeys[i]]});
+  document.querySelector('#site-header a').textContent=d.hero.name;
+  d.caseStudies.items.forEach(function(item,i){
+    var study=document.querySelectorAll('.case-study')[i];
+    if(!study)return;
+    study.querySelector('.case-title').textContent=item.title;
+    var tags=study.querySelectorAll('.tag');
+    item.tags.forEach(function(t,j){if(tags[j])tags[j].textContent=t});
+    var paragraphs=study.querySelectorAll('.case-content-inner p.text-sm');
+    if(paragraphs[0])paragraphs[0].textContent=item.challenge;
+    if(paragraphs[1])paragraphs[1].textContent=item.build;
+    if(paragraphs[2])paragraphs[2].textContent=item.result;
+  });
+  d.experience.roles.forEach(function(role,i){
+    var entry=document.querySelectorAll('.role-entry')[i];
+    if(!entry)return;
+    entry.querySelector('h3').textContent=role.title;
+    entry.querySelector('.period').textContent=role.period;
+    entry.querySelector('p.text-soft-ash').textContent=role.company;
+    var bullets=entry.querySelectorAll('ul li');
+    role.bullets.forEach(function(b,j){if(bullets[j])bullets[j].textContent=b});
+  });
+  var philSection=document.getElementById('philosophy');
+  var philTitle=philSection.querySelector('.text-label');
+  if(philTitle)philTitle.textContent=d.philosophy.title;
+  var philText=philSection.querySelector('.max-w-prose');
+  if(philText)philText.textContent=d.philosophy.text;
+  var catTitles=philSection.querySelectorAll('h3.text-sm');
+  var catLists=philSection.querySelectorAll('ul.space-y-1\\.5');
+  Object.keys(d.philosophy.categories).forEach(function(key,i){
+    var cat=d.philosophy.categories[key];
+    if(catTitles[i])catTitles[i].textContent=cat.title;
+    if(catLists[i])catLists[i].innerHTML=cat.items.map(function(item){return '<li class="text-sm text-soft-ash">'+item+'</li>'}).join('');
+  });
+}
+document.getElementById('lang-toggle').addEventListener('click',function(){setLang(currentLang==='en'?'es':'en')});
+document.querySelectorAll('.case-toggle').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var content=this.parentElement.querySelector('.case-content');
+    var icon=this.querySelector('.toggle-icon');
+    var isExpanded=content.classList.contains('expanded');
+    content.classList.toggle('expanded');
+    icon.textContent=isExpanded?'+':'−';
+    this.setAttribute('aria-expanded',!isExpanded);
+  });
+});
+var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('reveal-up-visible');observer.unobserve(entry.target)}})},{threshold:0.15,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal-up').forEach(function(el){observer.observe(el)});
+var navObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){var id=entry.target.id;document.querySelectorAll('.nav-link').forEach(function(link){link.classList.remove('active');if(link.getAttribute('href')==='#'+id)link.classList.add('active')}})})},{rootMargin:'-40% 0px -55% 0px'});
+['hero','philosophy','case-studies','experience','contact'].forEach(function(id){var el=document.getElementById(id);if(el)navObserver.observe(el)});
+var header=document.getElementById('site-header');
+window.addEventListener('scroll',function(){if(window.scrollY>50){header.style.backgroundColor='oklch(93% .006 80 / .95)'}else{header.style.backgroundColor='transparent'}},{passive:true});
+document.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventListener('click',function(e){e.preventDefault();var target=document.querySelector(this.getAttribute('href'));if(target)target.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>`;
+
+writeFileSync('/home/rimuru/Documents/opencodeProjects/recruiterpage/dist/index.html', html);
+console.log('Generated static HTML: ' + Math.round(html.length / 1024) + 'KB');

@@ -1,1 +1,0 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/home/rimuru/Documents/opencodeProjects/recruiterpage/app/layout\":[\"static/media/b5bb120f6fcabcb4-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
