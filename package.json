@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "static": "node scripts/generate-static.mjs"
+    "extract-dict": "node -e \"const fs=require('fs');const ts=fs.readFileSync('lib/dictionaries.ts','utf8');let js=ts.replace(/export type.*?;/g,'').replace(/export const/,'const').replace(/as const/g,'');eval('global.d='+js.slice(js.indexOf('{')));fs.writeFileSync('lib/dictionaries.json',JSON.stringify(global.d,null,2))\"",
+    "static": "npm run extract-dict && node scripts/generate-static.mjs"
   },
   "dependencies": {
     "next": "^14.2.0",

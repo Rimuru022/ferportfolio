@@ -76,6 +76,13 @@ export const dictionaries = {
           result: 'Increased analysis throughput and reduced turnaround time for security analysts. Clients received consistent, personalized reports faster while analysts maintained quality control through the review-before-send workflow. The system scaled across multiple clients without requiring additional headcount.',
           tags: ['Cybersecurity', 'AI Models', 'Google Cloud', 'n8n', 'Python', 'Real-Time Analysis'],
         },
+        {
+          title: 'Automated Client Proposal Generation & Payment Integration',
+          challenge: 'Sales and operations teams spent excessive time manually creating personalized client proposals with legal terms, dynamic pricing, and payment links. Each proposal required repetitive formatting, pricing calculations, and document assembly, creating a bottleneck in new client onboarding.',
+          build: 'Built an automated system triggered by form responses capturing client needs, company name, and requirements. The system dynamically generates personalized PDF proposals including legal scope, dynamically assigned payment links, and auto-calculated pricing. Completed documents are stored in Notion or Airtable and routed to the team via messaging for final review before one-click client delivery.',
+          result: 'Reduced proposal creation time by 40%. Streamlined the end-to-end client onboarding process by eliminating manual document assembly and payment link generation. Enabled the team to focus on client relationships rather than administrative document creation.',
+          tags: ['n8n', 'Automation', 'PDF Generation', 'Notion', 'Airtable', 'Client Onboarding'],
+        },
       ],
     },
     experience: {
@@ -102,11 +109,20 @@ export const dictionaries = {
         {
           title: 'Cloud Solutions Architect (Intern)',
           company: 'Huawei Cloud',
-          period: '2024',
+          period: 'Nov 2025 – May 2026',
           bullets: [
             'Architected serverless data pipelines (FunctionGraph) pushing 200 logs/5min from OBS to SIEMs (Splunk / Wazuh).',
             'Optimized client POC architectures (Spot instances, auto-scaling), estimating compute savings up to 35% and AI token reduction up to 70%.',
             'Translated complex telecom concepts (5G NFV / SDN, Multitenancy) into digestible analogies for non-technical stakeholders.',
+          ],
+        },
+        {
+          title: 'Automation & AI Integration Developer',
+          company: 'Freelance / Independent',
+          period: 'Jan 2026 – Present',
+          bullets: [
+            'Built an n8n + Python system capturing form responses (Google Forms, Typeform) via webhooks, processing and enriching data using Perplexity, Claude, and OpenAI models to provide contextual client briefs before team handoff.',
+            'Automated the storage of enriched records into a file-based database and triggered real-time Slack notifications to the team upon new entries, reducing manual research time and accelerating client onboarding workflow.',
           ],
         },
       ],
@@ -196,6 +212,13 @@ export const dictionaries = {
           result: 'Aumenté la capacidad de análisis y reduje el tiempo de entrega para analistas de seguridad. Los clientes recibieron reportes consistentes y personalizados más rápido, mientras los analistas mantuvieron control de calidad mediante el flujo de revisión previa al envío. El sistema escaló a múltiples clientes sin requerir personal adicional.',
           tags: ['Ciberseguridad', 'Modelos de IA', 'Google Cloud', 'n8n', 'Python', 'Análisis en Tiempo Real'],
         },
+        {
+          title: 'Generación Automatizada de Propuestas para Clientes e Integración de Pagos',
+          challenge: 'Los equipos de ventas y operaciones dedicaban demasiado tiempo a crear manualmente propuestas personalizadas con términos legales, precios dinámicos y links de pago. Cada propuesta requería formateo repetitivo, cálculos de precios y ensamblado de documentos, creando un cuello de botella en el onboarding de nuevos clientes.',
+          build: 'Construí un sistema automatizado activado por respuestas de formularios que capturan necesidades del cliente, nombre de la empresa y requerimientos. El sistema genera dinámicamente propuestas en PDF personalizadas incluyendo alcance legal, links de pago asignados dinámicamente y precios auto-calculados. Los documentos completados se almacenan en Notion o Airtable y se envían al equipo vía mensajería para revisión final antes de la entrega al cliente con un solo clic.',
+          result: 'Reduje el tiempo de creación de propuestas en un 40%. Optimizé el proceso completo de onboarding de clientes eliminando el ensamblado manual de documentos y la generación de links de pago. Permití que el equipo se enfocara en relaciones con clientes en lugar de tareas administrativas de creación de documentos.',
+          tags: ['n8n', 'Automatización', 'Generación de PDFs', 'Notion', 'Airtable', 'Onboarding de Clientes'],
+        },
       ],
     },
     experience: {
@@ -222,11 +245,20 @@ export const dictionaries = {
         {
           title: 'Arquitecto de Soluciones en la Nube (Becario)',
           company: 'Huawei Cloud',
-          period: '2024',
+          period: 'Nov 2025 – May 2026',
           bullets: [
             'Arquitecté pipelines de datos serverless (FunctionGraph) enviando 200 logs/5min desde OBS a SIEMs (Splunk / Wazuh).',
             'Optimicé arquitecturas POC de clientes (Spot instances, auto-scaling), estimando ahorros de computo de hasta 35% y reducción de tokens de IA de hasta 70%.',
             'Traduje conceptos complejos de telecomunicaciones (5G NFV / SDN, Multitenancy) en analogías digeribles para stakeholders no técnicos.',
+          ],
+        },
+        {
+          title: 'Desarrollador de Automatización e Integración de IA',
+          company: 'Freelance / Independiente',
+          period: 'Ene 2026 – Presente',
+          bullets: [
+            'Construí un sistema en n8n + Python que captura respuestas de formularios (Google Forms, Typeform) vía webhooks, procesando y enriqueciendo datos con modelos Perplexity, Claude y OpenAI para generar briefs contextuales del cliente antes de la entrega al equipo.',
+            'Automatizé el almacenamiento de registros enriquecidos en una base de datos basada en archivos y activé notificaciones en tiempo real a Slack para el equipo al recibir nuevos registros, reduciendo el tiempo de investigación manual y acelerando el flujo de onboarding de clientes.',
           ],
         },
       ],

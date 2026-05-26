@@ -1,95 +1,25 @@
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-// Inline dictionaries (copied from lib/dictionaries.ts)
-const en = {
-  nav: { home: 'Home', philosophy: 'Philosophy', caseStudies: 'Case Studies', experience: 'Experience', contact: 'Contact' },
-  hero: {
-    name: 'Fernando Pérez',
-    role: 'Integration & DataOps Engineer | Remote (CST / Mexico) · U.S. work authorized',
-    summary: 'I bridge the gap between messy business processes and deterministic data. I specialize in backend automation, BI architecture, and RevOps workflows: turning 30-hour manual tasks into 5-minute automated systems using strict data governance.',
-    downloadResume: 'Download Resume (.pdf)',
-    viewGithub: 'View GitHub',
-  },
-  philosophy: {
-    title: 'Engineering Philosophy & Stack',
-    text: 'My core engineering principle is doing more with less. Whether optimizing cloud infrastructure to cut AI token usage by 70% or designing self-hosted homelabs running multiple isolated LXC containers on just 8GB of RAM, I build lean, secure, and highly leveraged systems.',
-    categories: {
-      data: { title: 'Data & BI', items: ['SQL (PostgreSQL, MySQL)', 'Power Query', 'Power BI', 'SAP Fiori / ERP', 'Excel Advanced'] },
-      automation: { title: 'Automation & Ops', items: ['n8n', 'FunctionGraph (Serverless)', 'Apify', 'Google APIs (Calendar, Maps, Gmail)', 'Custom REST APIs'] },
-      infrastructure: { title: 'Infrastructure & Security', items: ['Proxmox', 'LXC / VMs', 'Google Cloud (Compute, Firebase)', 'Cloudflare Tunnels', 'Nginx Proxy Manager', 'SIEM (Splunk, Wazuh)', 'AdGuard DNS'] },
-      languages: { title: 'Languages', items: ['Python', 'Node.js (TypeScript / Zod)', 'Google Antigravity'] },
-    },
-  },
-  caseStudies: {
-    title: 'Case Studies',
-    items: [
-      { title: 'Low-Friction Inventory & Procurement Automation', challenge: 'University departments needed an inventory tracking system, but the end-users were non-technical. Deploying a complex custom Python script or a strict SQL database would create a massive maintenance bottleneck once handed over.', build: 'Engineered a deterministic automation flow using n8n. Used Google Sheets as the visual state-management tool so non-technical users could easily read and edit thresholds. The flow compares weekly forms against the baseline and triggers automated procurement alerts.', result: 'Created a self-sustaining system that requires zero technical maintenance. Users simply fill out a form, and the architecture handles data sanitization, math, and email routing automatically.', tags: ['n8n', 'Workflow Automation', 'System Design'] },
-      { title: 'Secure GenAI "ChatBI" for Telecommunications (POC)', challenge: 'A telecom client needed a way for non-technical managers to query complex SQL databases using natural language, but had strict constraints: a 3-day delivery window and a zero-tolerance policy for database modification or SQL injection.', build: 'Developed a Text-to-SQL architecture using Llama 3.1 (8B). Overcame the lack of vector databases by injecting robust dynamic schema context directly into system prompts. Implemented strict guardrails, parametrized read-only queries, and rollback procedures.', result: 'Delivered a functional, highly accurate prototype in 72 hours that dynamically generated graphs and insights from Huawei Cloud RDS and GaussDB without hallucinations or security breaches.', tags: ['LLMs', 'SQL', 'System Prompts', 'Backend Security'] },
-      { title: 'Enterprise Business Intelligence & Automated Forecasting', challenge: 'A commercial division at BP (Castrol) was losing roughly 30 hours per week manually extracting flat files from SAP ERP, transforming data in Excel, and building static PowerPoint presentations to track sales KPIs and distributor forecasts.', build: 'Architected an automated Power BI dashboard fed by a custom Power Query pipeline. The pipeline automatically ingests and cleans SAP data exports, standardizes fields, and provides dynamic filtering for over 15+ daily users.', result: 'Reduced reporting cycle time by 80% (from days to under 5 hours). Allowed a single analyst to execute the workload of three, while maintaining a +/- 15% forecast accuracy to prevent stockouts.', tags: ['Power BI', 'Power Query', 'SAP ERP', 'Data Operations'] },
-      { title: 'Cloud-Native AI Orchestration & API Integration', challenge: 'Needed a flexible, cost-efficient architecture to build AI-powered applications leveraging Google Cloud infrastructure, Google APIs (Calendar, Maps, Gmail), and automation workflows without vendor lock-in or excessive API costs.', build: 'Architected a hybrid cloud-local AI system using Google Cloud Compute Instances to run local language models connected to custom-built applications via REST APIs. Integrated Google Calendar, Maps, and Gmail APIs with n8n automation workflows and custom code in Node.js and Python. Used Google Antigravity for agent-first rapid prototyping and Firebase for real-time data synchronization across applications.', result: 'Reduced AI token consumption by 30-45% through efficient local model deployment, cutting external API key costs by 15-30% while maintaining performance. Achieved enhanced data privacy by processing sensitive operations on local cloud instances. Delivered a flexible, reusable architecture adaptable to varying user requirements across multiple projects.', tags: ['Google Cloud', 'Google Antigravity', 'AI Models', 'n8n', 'Firebase', 'REST APIs'] },
-      { title: 'Real-Time Cybersecurity Traffic Analysis & Automated Reporting', challenge: 'Cybersecurity analysts needed to process real-time network traffic data from multiple clients, each requiring personalized reporting formats. Manual deep packet inspection and report generation created a bottleneck, delaying critical security insights and reducing analysis throughput.', build: 'Deployed a local AI model on Google Cloud Compute Instances connected to a custom-built packet analysis system. The system ingests real-time network traffic, performs deep packet inspection, and generates personalized security reports per client. An automated workflow (n8n + Python) creates predefined email summaries and queues reports for analyst review before final delivery.', result: 'Increased analysis throughput and reduced turnaround time for security analysts. Clients received consistent, personalized reports faster while analysts maintained quality control through the review-before-send workflow. The system scaled across multiple clients without requiring additional headcount.', tags: ['Cybersecurity', 'AI Models', 'Google Cloud', 'n8n', 'Python', 'Real-Time Analysis'] },
-    ],
-  },
-  experience: {
-    title: 'Professional Experience',
-    roles: [
-      { title: 'Data & Sales Strategy Analyst', company: 'Castrol (BP)', period: 'Sep 2024 – Mar 2025', bullets: ['Centralized 3 critical data sources into automated dashboards, saving ~30 manual hours per week.', 'Managed distributor communications and sales forecasts based on historical SKUs.'] },
-      { title: 'Regulatory & Compliance Ops', company: 'Castrol (BP)', period: 'Mar 2025 – Sep 2025', bullets: ['Managed certification procurement and compliance analysis for 15+ critical SKUs based on NOMs.', 'Automated the sanitization of CSV learning-campus datasets using n8n to generate strategic HR reports.'] },
-      { title: 'Cloud Solutions Architect (Intern)', company: 'Huawei Cloud', period: '2024', bullets: ['Architected serverless data pipelines (FunctionGraph) pushing 200 logs/5min from OBS to SIEMs (Splunk / Wazuh).', 'Optimized client POC architectures (Spot instances, auto-scaling), estimating compute savings up to 35% and AI token reduction up to 70%.', 'Translated complex telecom concepts (5G NFV / SDN, Multitenancy) into digestible analogies for non-technical stakeholders.'] },
-    ],
-  },
-  contact: {
-    education: 'B.S. Systems & Telecommunications Engineering – Universidad Iberoamericana (Expected May 2027)',
-    emailLabel: 'Email', linkedinLabel: 'LinkedIn',
-    email: 'fernandoperezgonzalez01@gmail.com', linkedin: 'www.linkedin.com/in/fernandopgonzalez',
-    emailPlaceholder: 'fernandoperezgonzalez01@gmail.com', linkedinPlaceholder: 'linkedin.com/in/fernandopgonzalez',
-  },
-};
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..');
 
-const es = {
-  nav: { home: 'Inicio', philosophy: 'Filosofía', caseStudies: 'Casos de Estudio', experience: 'Experiencia', contact: 'Contacto' },
-  hero: {
-    name: 'Fernando Pérez',
-    role: 'Arquitecto de Operaciones de Datos y Sistemas | Remoto (CST / México) · Autorizado para trabajar en EE.UU.',
-    summary: 'Cierro la brecha entre procesos de negocio caóticos y datos deterministas. Me especializo en automatización de backend, arquitectura de BI y flujos de trabajo de RevOps: convierto tareas manuales de 30 horas en sistemas automatizados de 5 minutos mediante gobernanza estricta de datos.',
-    downloadResume: 'Descargar CV (.pdf)',
-    viewGithub: 'Ver GitHub',
-  },
-  philosophy: {
-    title: 'Filosofía de Ingeniería y Stack',
-    text: 'Mi principio de ingeniería central es hacer más con menos. Ya sea optimizando infraestructura en la nube para reducir el uso de tokens de IA en un 70% o diseñando homelabs autoalojados ejecutando múltiples contenedores LXC aislados en solo 8GB de RAM, construyo sistemas lean, seguros y altamente apalancados.',
-    categories: {
-      data: { title: 'Datos y BI', items: ['SQL (PostgreSQL, MySQL)', 'Power Query', 'Power BI', 'SAP Fiori / ERP', 'Excel Avanzado'] },
-      automation: { title: 'Automatización y Ops', items: ['n8n', 'FunctionGraph (Serverless)', 'Apify', 'Google APIs (Calendar, Maps, Gmail)', 'APIs REST Personalizadas'] },
-      infrastructure: { title: 'Infraestructura y Seguridad', items: ['Proxmox', 'LXC / VMs', 'Google Cloud (Compute, Firebase)', 'Cloudflare Tunnels', 'Nginx Proxy Manager', 'SIEM (Splunk, Wazuh)', 'AdGuard DNS'] },
-      languages: { title: 'Lenguajes', items: ['Python', 'Node.js (TypeScript / Zod)', 'Google Antigravity'] },
-    },
-  },
-  caseStudies: {
-    title: 'Casos de Estudio',
-    items: [
-      { title: 'Automatización de Bajo Fricción para Inventario y Compras', challenge: 'Los departamentos universitarios necesitaban un sistema de rastreo de inventario, pero los usuarios finales no eran técnicos. Desplegar un script complejo de Python personalizado o una base de datos SQL estricta crearía un cuello de botella de mantenimiento masivo una vez transferido.', build: 'Diseñé un flujo de automatización determinista usando n8n. Utilicé Google Sheets como herramienta visual de gestión de estado para que usuarios no técnicos pudieran leer y editar umbrales fácilmente. El flujo compara formularios semanales contra la línea base y activa alertas de compra automatizadas.', result: 'Creé un sistema autosuficiente que requiere cero mantenimiento técnico. Los usuarios simplemente llenan un formulario, y la arquitectura maneja la sanitización de datos, cálculos y enrutamiento de correos automáticamente.', tags: ['n8n', 'Automatización de Flujos', 'Diseño de Sistemas'] },
-      { title: 'GenAI Seguro "ChatBI" para Telecomunicaciones (POC)', challenge: 'Un cliente de telecomunicaciones necesitaba una forma de que gerentes no técnicos consultaran bases de datos SQL complejas usando lenguaje natural, pero tenía restricciones estrictas: una ventana de entrega de 3 días y una política de tolerancia cero para modificación de bases de datos o inyección SQL.', build: 'Desarrollé una arquitectura de Texto a SQL usando Llama 3.1 (8B). Superé la falta de bases de datos vectoriales inyectando contexto de esquema dinámico robusto directamente en los prompts del sistema. Implementé guardrails estrictos, consultas parametrizadas de solo lectura y procedimientos de rollback.', result: 'Entregué un prototipo funcional y altamente preciso en 72 horas que generaba dinámicamente gráficos e insights desde Huawei Cloud RDS y GaussDB sin alucinaciones ni brechas de seguridad.', tags: ['LLMs', 'SQL', 'System Prompts', 'Seguridad de Backend'] },
-      { title: 'Inteligencia de Negocios Empresarial y Pronóstico Automatizado', challenge: 'Una división comercial de BP (Castrol) perdía aproximadamente 30 horas por semana extrayendo manualmente archivos planos de SAP ERP, transformando datos en Excel y construyendo presentaciones estáticas de PowerPoint para rastrear KPIs de ventas y pronósticos de distribuidores.', build: 'Arquitecté un dashboard automatizado de Power BI alimentado por un pipeline personalizado de Power Query. El pipeline ingiere y limpia automáticamente exportaciones de datos de SAP, estandariza campos y proporciona filtrado dinámico para más de 15 usuarios diarios.', result: 'Reduje el tiempo del ciclo de reporteo en un 80% (de días a menos de 5 horas). Permití que un solo analista ejecutara la carga de trabajo de tres, manteniendo una precisión de pronóstico de +/- 15% para prevenir desabastecimiento.', tags: ['Power BI', 'Power Query', 'SAP ERP', 'Operaciones de Datos'] },
-      { title: 'Orquestación de IA en la Nube e Integración de APIs', challenge: 'Se necesitaba una arquitectura flexible y eficiente para construir aplicaciones impulsadas por IA usando infraestructura de Google Cloud, APIs de Google (Calendar, Maps, Gmail) y flujos de automatización sin dependencia de un solo proveedor ni costos excesivos de APIs.', build: 'Arquitecté un sistema híbrido nube-local usando instancias de cómputo de Google Cloud para ejecutar modelos de lenguaje locales conectados a aplicaciones propias vía APIs REST. Integré las APIs de Google Calendar, Maps y Gmail con flujos de automatización en n8n y código personalizado en Node.js y Python. Usé Google Antigravity para prototipado rápido agent-first y Firebase para sincronización de datos en tiempo real entre aplicaciones.', result: 'Reduje el consumo de tokens de IA en un 30-45% mediante despliegue eficiente de modelos locales, reduciendo costos externos de API keys en un 15-30% sin sacrificar rendimiento. Logré mayor privacidad de datos al procesar operaciones sensibles en instancias locales en la nube. Entregué una arquitectura flexible y reutilizable adaptable a requerimientos variables en múltiples proyectos.', tags: ['Google Cloud', 'Google Antigravity', 'Modelos de IA', 'n8n', 'Firebase', 'APIs REST'] },
-      { title: 'Análisis de Tráfico de Ciberseguridad en Tiempo Real y Reportes Automatizados', challenge: 'Analistas de ciberseguridad necesitaban procesar tráfico de red en tiempo real de múltiples clientes, cada uno con formatos de reporte personalizados. La inspección profunda de paquetes y generación manual de reportes creaba un cuello de botella, retrasando información crítica de seguridad y reduciendo la capacidad de análisis.', build: 'Desplegué un modelo local de IA en instancias de cómputo de Google Cloud conectado a un sistema propio de análisis de paquetes. El sistema ingiere tráfico de red en tiempo real, realiza inspección profunda de paquetes y genera reportes de seguridad personalizados por cliente. Un flujo automatizado (n8n + Python) crea resúmenes predefinidos por correo y encola reportes para revisión del analista antes del envío final.', result: 'Aumenté la capacidad de análisis y reduje el tiempo de entrega para analistas de seguridad. Los clientes recibieron reportes consistentes y personalizados más rápido, mientras los analistas mantuvieron control de calidad mediante el flujo de revisión previa al envío. El sistema escaló a múltiples clientes sin requerir personal adicional.', tags: ['Ciberseguridad', 'Modelos de IA', 'Google Cloud', 'n8n', 'Python', 'Análisis en Tiempo Real'] },
-    ],
-  },
-  experience: {
-    title: 'Experiencia Profesional',
-    roles: [
-      { title: 'Analista de Datos y Estrategia de Ventas', company: 'Castrol (BP)', period: 'Sep 2024 – Mar 2025', bullets: ['Centralicé 3 fuentes de datos críticas en dashboards automatizados, ahorrando ~30 horas manuales por semana.', 'Gestioné comunicaciones con distribuidores y pronósticos de ventas basados en SKUs históricos.'] },
-      { title: 'Operaciones Regulatorias y de Cumplimiento', company: 'Castrol (BP)', period: 'Mar 2025 – Sep 2025', bullets: ['Gestioné la adquisición de certificaciones y análisis de cumplimiento para 15+ SKUs críticos basados en NOMs.', 'Automatizé la sanitización de datasets CSV de campus de aprendizaje usando n8n para generar reportes estratégicos de RRHH.'] },
-      { title: 'Arquitecto de Soluciones en la Nube (Becario)', company: 'Huawei Cloud', period: '2024', bullets: ['Arquitecté pipelines de datos serverless (FunctionGraph) enviando 200 logs/5min desde OBS a SIEMs (Splunk / Wazuh).', 'Optimicé arquitecturas POC de clientes (Spot instances, auto-scaling), estimando ahorros de computo de hasta 35% y reducción de tokens de IA de hasta 70%.', 'Traduje conceptos complejos de telecomunicaciones (5G NFV / SDN, Multitenancy) en analogías digeribles para stakeholders no técnicos.'] },
-    ],
-  },
-  contact: {
-    education: 'Lic. en Ingeniería de Sistemas y Telecomunicaciones – Universidad Iberoamericana (Expected May 2027)',
-    emailLabel: 'Correo', linkedinLabel: 'LinkedIn',
-    email: 'fernandoperezgonzalez01@gmail.com', linkedin: 'www.linkedin.com/in/fernandopgonzalez',
-    emailPlaceholder: 'fernandoperezgonzalez01@gmail.com', linkedinPlaceholder: 'linkedin.com/in/fernandopgonzalez',
-  },
-};
+// Read dictionaries from JSON
+const dictPath = join(root, 'lib', 'dictionaries.json');
+if (!existsSync(dictPath)) {
+  console.error('Run: node -e "' +
+    "const fs=require('fs');" +
+    "const ts=fs.readFileSync('lib/dictionaries.ts','utf8');" +
+    "let js=ts.replace(/export type.*?;/g,'').replace(/export const/,'const').replace(/as const/g,'');" +
+    "eval('global.d='+js.slice(js.indexOf('{')));" +
+    "fs.writeFileSync('lib/dictionaries.json',JSON.stringify(global.d,null,2));" +
+    '"');
+  process.exit(1);
+}
+const dicts = JSON.parse(readFileSync(dictPath, 'utf8'));
+const en = dicts.en;
+const es = dicts.es;
 
 function renderTags(tags) {
   return tags.map(t => `<span class="tag">${t}</span>`).join('');
@@ -373,5 +303,8 @@ document.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventLi
 </body>
 </html>`;
 
-writeFileSync('/home/rimuru/Documents/opencodeProjects/recruiterpage/dist/index.html', html);
-console.log('Generated static HTML: ' + Math.round(html.length / 1024) + 'KB');
+const outPath = join(root, 'dist', 'index.html');
+const outDir = dirname(outPath);
+if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
+writeFileSync(outPath, html);
+console.log(`Generated ${outPath} (${Math.round(html.length / 1024)}KB)`);
