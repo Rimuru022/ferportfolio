@@ -25,25 +25,40 @@ function renderTags(tags) {
   return tags.map(t => `<span class="tag">${t}</span>`).join('');
 }
 
+function renderCaseStudyVideo(index) {
+  const videos = {
+    0: 'https://canva.link/wznw1cytbu01xal',
+  };
+  const url = videos[index];
+  if (!url) return '';
+  return `<div class="pt-4"><a href="${url}" target="_blank" rel="noopener noreferrer" class="video-link group"><span class="video-play-icon">▶</span><span>Watch Full Demo Video</span><span class="text-xs text-soft-ash/60">↗</span></a></div>`;
+}
+
 function renderCaseStudyImages(index) {
   const images = {
     0: [
+      { src: './images/imagen%20de%20rental%20flow%20exec%20pagina%20web.png', alt: 'Rental Operations AI web interface' },
+      { src: './images/diagrama%20inicial%20planeacion%20renta%20flow.png', alt: 'Initial planning diagram' },
+      { src: './images/full%20rental%20n8n%20flow.png', alt: 'Complete n8n workflow' },
+      { src: './images/Openrouter%20logs%20cost%20per%201%20exec.png', alt: 'OpenRouter cost logs' },
+    ],
+    1: [
       { src: './images/inventory-1.jpg', alt: 'University inventory dashboard view 1' },
       { src: './images/inventory-2.jpg', alt: 'University inventory dashboard view 2' },
       { src: './images/inventory-3.jpg', alt: 'University inventory dashboard view 3' },
       { src: './images/inventory-4.jpg', alt: 'Power Query automation behind the inventory system' },
       { src: './images/n8n-inventory.jpg', alt: 'n8n workflow automation for inventory management' },
     ],
-    1: [
+    2: [
       { src: './images/chatbi.jpg', alt: 'Secure GenAI ChatBI prototype interface' },
     ],
   };
   const imgs = images[index];
   if (!imgs || imgs.length === 0) return '';
   if (imgs.length === 1) {
-    return `<figure class="case-image"><img src="${imgs[0].src}" alt="${imgs[0].alt}" loading="lazy" width="700" height="400" decoding="async"/></figure>`;
+    return `<figure class="case-image cursor-zoom-in" onclick="openLightbox('${imgs[0].src}')"><img src="${imgs[0].src}" alt="${imgs[0].alt}" loading="lazy" width="700" height="400" decoding="async"/></figure>`;
   }
-  const grid = imgs.map(img => `<figure class="case-image"><img src="${img.src}" alt="${img.alt}" loading="lazy" width="350" height="200" decoding="async"/></figure>`).join('');
+  const grid = imgs.map(img => `<figure class="case-image cursor-zoom-in" onclick="openLightbox('${img.src}')"><img src="${img.src}" alt="${img.alt}" loading="lazy" width="350" height="200" decoding="async"/></figure>`).join('');
   return `<div class="case-image-grid">${grid}</div>`;
 }
 
@@ -58,12 +73,15 @@ function renderCaseStudies(lang) {
   return data.caseStudies.items.map((item, i) => {
     const expanded = i === 0 ? ' expanded' : '';
     const toggleIcon = i === 0 ? '−' : '+';
+    const featured = i === 0 ? ' featured-case-study' : '';
+    const featuredBadge = i === 0 ? '<span class="featured-badge">Complete Case Study · Photos · Diagrams · Video</span>' : '';
     return `
-    <div class="case-study reveal-up" style="transition-delay:${i * 120}ms">
+    <div class="case-study reveal-up${featured}" style="transition-delay:${i * 120}ms">
       <div class="border-t pt-6">
         <button class="case-toggle w-full text-left" aria-expanded="${i === 0}" data-index="${i}">
           <div class="flex items-start justify-between gap-4">
             <div class="flex-1">
+              ${featuredBadge}
               <h3 class="case-title text-lg md:text-xl font-semibold mb-2">${item.title}</h3>
               <div class="flex flex-wrap gap-2">${renderTags(item.tags)}</div>
             </div>
@@ -76,6 +94,7 @@ function renderCaseStudies(lang) {
             <div><p class="text-label mb-1.5">Build</p><p class="text-sm md:text-base leading-relaxed">${item.build}</p></div>
             <div><p class="text-label mb-1.5">Result</p><p class="text-sm md:text-base leading-relaxed">${item.result}</p></div>
             ${renderCaseStudyImages(i) ? `<div class="pt-4">${renderCaseStudyImages(i)}</div>` : ''}
+            ${renderCaseStudyVideo(i)}
           </div>
         </div>
       </div>
@@ -140,6 +159,17 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0;text-wrap:pretty}a{color:inher
 .text-warm-charcoal{color:oklch(22% .015 80)}.text-warm-ivory{color:oklch(97% .005 80)}.text-soft-ash{color:oklch(55% .01 80)}.text-soft-ash\\/50{color:oklch(55% .01 80/.5)}.text-soft-ash\\/60{color:oklch(55% .01 80/.6)}.text-soft-ash\\/70{color:oklch(55% .01 80/.7)}.text-warm-charcoal\\/80{color:oklch(22% .015 80/.8)}
 .fixed{position:fixed}.top-0{top:0}.left-0{left:0}.right-0{right:0}.z-50{z-index:50}
 .case-image{background-color:oklch(96% .004 80);padding:4px}
+.featured-case-study{border-left:2px solid oklch(52% .13 250);padding-left:1.25rem}
+.featured-badge{display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:oklch(52% .13 250);margin-bottom:.5rem;padding:.125rem 0;border-bottom:1px solid oklch(52% .13 250/.3)}
+.video-link{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.25rem;border:1px solid oklch(22% .015 80/.2);background-color:oklch(22% .015 80);color:oklch(97% .005 80);font-size:.8125rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em;transition:background-color 150ms ease-out,border-color 150ms ease-out,transform 200ms cubic-bezier(.25,1,.5,1)}
+.video-link:hover{background-color:oklch(52% .13 250);border-color:oklch(52% .13 250);transform:translateY(-1px)}
+.video-play-icon{font-size:.75rem;line-height:1}
+.cursor-zoom-in{cursor:zoom-in}
+.lightbox-overlay{position:fixed;inset:0;background-color:oklch(22% .015 80 / .9);z-index:100;display:none;align-items:center;justify-content:center;padding:1.5rem;cursor:pointer}
+.lightbox-content{position:relative;max-width:90vw;max-height:90vh;cursor:default}
+.lightbox-image{max-width:100%;max-height:90vh;display:block;object-fit:contain}
+.lightbox-close{position:absolute;top:-2.5rem;right:0;font-size:2rem;line-height:1;color:oklch(97% .005 80);background:none;border:none;cursor:pointer;padding:.25rem}
+@media(min-width:768px){.lightbox-close{top:-3rem;font-size:2.5rem}}
 .case-image-grid{display:grid;grid-template-columns:1fr;gap:.75rem}@media(min-width:640px){.case-image-grid{grid-template-columns:repeat(2,1fr)}}
 .tag{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:oklch(55% .01 80/.7);border:1px solid oklch(55% .01 80/.2);padding:.125rem .5rem}
 .reveal-up{opacity:0;transform:translateY(40px);transition:opacity 700ms cubic-bezier(.25,1,.5,1),transform 700ms cubic-bezier(.25,1,.5,1)}.reveal-up.reveal-up-visible{opacity:1;transform:translateY(0)}
@@ -228,6 +258,13 @@ h1,h2,h3,h4{margin:0;text-wrap:balance}p{margin:0;text-wrap:pretty}a{color:inher
 
 </main>
 
+<div id="lightbox-overlay" class="lightbox-overlay" onclick="closeLightbox()" style="display:none">
+  <div class="lightbox-content">
+    <img id="lightbox-img" src="" alt="" class="lightbox-image" onclick="event.stopPropagation()" />
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">×</button>
+  </div>
+</div>
+
 <script>
 var LANG={en:${JSON.stringify(en)},es:${JSON.stringify(es)}};
 var currentLang='en';
@@ -299,6 +336,9 @@ var navObserver=new IntersectionObserver(function(entries){entries.forEach(funct
 var header=document.getElementById('site-header');
 window.addEventListener('scroll',function(){if(window.scrollY>50){header.style.backgroundColor='oklch(93% .006 80 / .95)'}else{header.style.backgroundColor='transparent'}},{passive:true});
 document.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventListener('click',function(e){e.preventDefault();var target=document.querySelector(this.getAttribute('href'));if(target)target.scrollIntoView({behavior:'smooth'})})});
+function openLightbox(src){var overlay=document.getElementById('lightbox-overlay');var img=document.getElementById('lightbox-img');img.src=src;overlay.style.display='flex';document.body.style.overflow='hidden'}
+function closeLightbox(){var overlay=document.getElementById('lightbox-overlay');overlay.style.display='none';document.body.style.overflow=''}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox()});
 </script>
 </body>
 </html>`;

@@ -64,6 +64,20 @@
       "title": "Case Studies",
       "items": [
         {
+          "title": "Automated AI Agent for Short-Term Rental Operations",
+          "challenge": "A property management company handling short-term rentals was manually processing guest messages across multiple channels: classifying urgencies, creating tasks, notifying teams, and following up. All without a centralized system, response times were inconsistent, operational bottlenecks were frequent, and every new message required someone to read, decide, and act.",
+          "build": "Designed and deployed an end-to-end n8n workflow triggered by a custom web page via webhook. The flow includes security guardrails (content filters, input sanitization) before routing to an AI model via OpenRouter. The AI classifies each message by type (check-in, maintenance, cleaning, noise complaint, general inquiry, stay extension, owner follow-up, billing), assigns priority (high/medium/low), suggests the next internal action, generates a suggested response, and flags items requiring human approval. Each execution logs the full structured output to an Excel spreadsheet for complete auditability. The custom web interface displays the response, execution time, and total AI cost per run using OpenRouter cost tracking, averaging 5 AI calls per full workflow execution.",
+          "result": "Reduced manual message triage time by approximately 70%. Every guest inquiry is now consistently classified, prioritized, and routed with a suggested response within seconds. Execution costs remain under a few cents per run (verified via OpenRouter logs). The human-in-the-loop design ensures critical actions (refunds, rebookings, property access changes) always require approval before execution. The Excel audit log provides full traceability for operations reviews.",
+          "tags": [
+            "n8n",
+            "AI Agents",
+            "OpenRouter",
+            "Workflow Automation",
+            "Short-Term Rentals",
+            "Human-in-the-Loop"
+          ]
+        },
+        {
           "title": "Low-Friction Inventory & Procurement Automation",
           "challenge": "University departments needed an inventory tracking system, but the end-users were non-technical. Deploying a complex custom Python script or a strict SQL database would create a massive maintenance bottleneck once handed over.",
           "build": "Engineered a deterministic automation flow using n8n. Used Google Sheets as the visual state-management tool so non-technical users could easily read and edit thresholds. The flow compares weekly forms against the baseline and triggers automated procurement alerts.",
@@ -258,6 +272,20 @@
     "caseStudies": {
       "title": "Casos de Estudio",
       "items": [
+        {
+          "title": "Agente de IA Automatizado para Operaciones de Rentas Temporales",
+          "challenge": "Una empresa administradora de propiedades de renta temporal procesaba manualmente los mensajes de huéspedes a través de múltiples canales: clasificando urgencias, creando tareas, notificando equipos y dando seguimiento. Todo sin un sistema centralizado, los tiempos de respuesta eran inconsistentes, los cuellos de botella operativos eran frecuentes, y cada nuevo mensaje requería que alguien lo leyera, decidiera y actuara.",
+          "build": "Diseñé y desplegué un flujo completo en n8n activado por una página web personalizada vía webhook. El flujo incluye guardrails de seguridad (filtros de contenido, sanitización de entrada) antes de enrutar a un modelo de IA vía OpenRouter. La IA clasifica cada mensaje por tipo (check-in, mantenimiento, limpieza, queja de ruido, consulta general, extensión de estancia, seguimiento a propietario, facturación), asigna prioridad (alta/media/baja), sugiere la siguiente acción interna, genera una respuesta sugerida, y marca elementos que requieren aprobación humana. Cada ejecución registra la salida estructurada completa en una hoja de Excel para auditoría total. La interfaz web muestra la respuesta, el tiempo de ejecución y el costo total de IA por ejecución usando el rastreo de costos de OpenRouter, promediando 5 llamadas de IA por ejecución completa del flujo.",
+          "result": "Reduje el tiempo de clasificación manual de mensajes en aproximadamente un 70%. Cada consulta de huésped ahora se clasifica, prioriza y enruta consistentemente con una respuesta sugerida en segundos. Los costos de ejecución se mantienen por debajo de unos centavos por ejecución (verificado via logs de OpenRouter). El diseño con supervisión humana garantiza que las acciones críticas (reembolsos, re-reservas, cambios de acceso a la propiedad) siempre requieran aprobación antes de ejecutarse. El registro de auditoría en Excel proporciona trazabilidad completa para revisiones operativas.",
+          "tags": [
+            "n8n",
+            "Agentes de IA",
+            "OpenRouter",
+            "Automatización de Flujos",
+            "Rentas Temporales",
+            "Supervisión Humana"
+          ]
+        },
         {
           "title": "Automatización de Bajo Fricción para Inventario y Compras",
           "challenge": "Los departamentos universitarios necesitaban un sistema de rastreo de inventario, pero los usuarios finales no eran técnicos. Desplegar un script complejo de Python personalizado o una base de datos SQL estricta crearía un cuello de botella de mantenimiento masivo una vez transferido.",
